@@ -1,1 +1,2 @@
 bind_address = ":8080"
+log_level = "debu"
