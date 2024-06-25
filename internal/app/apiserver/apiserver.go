@@ -34,16 +34,6 @@ func (s *APIServer) Bootstrap() error {
 	return http.ListenAndServe(s.config.BindAddress, s.router)
 }
 
-func (s *APIServer) configureRouter() {
-	s.router.HandleFunc("/hello", s.handleHello())
-}
-
-func (s *APIServer) handleHello() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello")
-	}
-}
-
 func (s *APIServer) configureLogger() error {
 	level, err := logrus.ParseLevel(s.config.LogLevel)
 	if err != nil {
@@ -53,4 +43,14 @@ func (s *APIServer) configureLogger() error {
 	s.logger.SetLevel(level)
 
 	return nil
+}
+
+func (s *APIServer) configureRouter() {
+	s.router.HandleFunc("/hello", s.handleHello())
+}
+
+func (s *APIServer) handleHello() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "Hello")
+	}
 }
