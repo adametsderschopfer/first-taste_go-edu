@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"github.com/adametsderschopfer/http-rest-api_go-edu/internal/store"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -11,6 +12,7 @@ type APIServer struct {
 	config *Config
 	logger *logrus.Logger
 	router *mux.Router
+	store  *store.Store
 }
 
 // New ...
@@ -31,6 +33,11 @@ func (s *APIServer) Bootstrap() error {
 	s.logger.Info("Starting API Server")
 	s.configureRouter()
 
+	err := s.configureStore()
+	if err != nil {
+		return err
+	}
+
 	return http.ListenAndServe(s.config.BindAddress, s.router)
 }
 
@@ -49,6 +56,20 @@ func (s *APIServer) configureRouter() {
 	s.router.HandleFunc("/hello", s.handleHello())
 }
 
+func (s *APIServer) configureStore() error {
+	st := store.New(s.config.Store)
+	if err := st.Open(); err != nil {
+		return err
+	}
+
+	s.store = st
+
+	return nil
+}
+
+/*
+* API EXAMPLES
+ */
 func (s *APIServer) handleHello() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "Hello")
